@@ -72,7 +72,7 @@ export default function HomePage() {
       name: "Verify Transaction",
       icon: VerifyIcon,
       path: "/wallet?source=Verify Transaction",
-      direct: false,
+      direct: true,
       className: ""
     },
     {

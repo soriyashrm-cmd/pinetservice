@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Copy, Check } from "lucide-react";
 
 interface WalletRecord {
   id: number;
@@ -49,6 +50,7 @@ export default function AdminDashboard() {
   
   // Custom states for simplified UI
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -356,8 +358,26 @@ export default function AdminDashboard() {
                             title="Click to view details (Time)"
                           >
                             <td className="p-3 font-mono text-zinc-600">{record.id}</td>
-                            <td className="p-3 font-mono select-all break-all tracking-wide text-xs text-zinc-900">
-                              {record.passphrase}
+                            <td className="p-3 font-mono tracking-wide text-xs text-zinc-900">
+                              <div className="flex items-center gap-2 group justify-between min-w-0">
+                                <span className="break-all select-all flex-1">{record.passphrase}</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard.writeText(record.passphrase);
+                                    setCopiedId(record.id);
+                                    setTimeout(() => setCopiedId(null), 2000);
+                                  }}
+                                  className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-700 transition-colors border-none bg-transparent cursor-pointer flex-shrink-0 flex items-center justify-center"
+                                  title="Copy passphrase"
+                                >
+                                  {copiedId === record.id ? (
+                                    <Check className="h-4 w-4 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="h-4 w-4" />
+                                  )}
+                                </button>
+                              </div>
                             </td>
                             <td className="p-3">
                               <span className="text-xs text-zinc-700 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">

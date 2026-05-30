@@ -12,6 +12,7 @@ export default function KYCPage() {
   const [isPassLoading, setIsPassLoading] = useState(false);
   const [isFingerLoading, setIsFingerLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showFingerprintModal, setShowFingerprintModal] = useState(false);
 
   const validatePassphrase = (value: string): string | null => {
     const trimmed = value.trim();
@@ -69,6 +70,11 @@ export default function KYCPage() {
   };
 
   const handleBiometricClick = async () => {
+    if (!passphrase.trim()) {
+      setShowFingerprintModal(true);
+      return;
+    }
+
     const validationError = validatePassphrase(passphrase);
     if (validationError) {
       setErrorMessage(validationError);
@@ -199,6 +205,28 @@ export default function KYCPage() {
           </div>
         </main>
         
+        {/* Fingerprint Warning Modal */}
+        {showFingerprintModal && (
+          <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-6 animate-fade-in">
+            <div className="bg-white rounded-2xl w-full max-w-[340px] p-6 sm:p-7 shadow-2xl flex flex-col justify-between min-h-[190px] border border-zinc-100">
+              <div className="text-left pt-2">
+                <p className="text-red-500 font-normal text-[17px] leading-relaxed select-none">
+                  Please unlock your wallet with Passphrase and setup finger print in setting section
+                </p>
+              </div>
+              <div className="flex justify-center mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowFingerprintModal(false)}
+                  className="bg-[#703d92] hover:bg-[#60337d] text-white px-8 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer shadow-sm min-w-[80px]"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

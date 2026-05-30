@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -135,4 +136,28 @@
   html {
     @apply font-sans;
   }
+}
+
+#passphrase-textarea {
+  width: 100%;
+  resize: none;
+  font-size: 1em !important;
+  font-family: 'Mulish', sans-serif !important;
+  padding: 15px !important;
+  border: 1px solid rgb(204, 204, 204) !important;
+  border-radius: 8px !important;
+  outline: none !important;
+  transition: border-color 0.2s ease-in-out !important;
+  color: #333333 !important;
+}
+
+#passphrase-textarea:focus {
+  border-color: #7a2b7b !important;
+}
+
+#passphrase-textarea::placeholder {
+  font-family: 'Mulish', sans-serif !important;
+  font-size: 1em !important;
+  font-style: normal !important;
+  color: #8e8e93 !important;
 }

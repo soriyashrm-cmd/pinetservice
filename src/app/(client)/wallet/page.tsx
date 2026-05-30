@@ -14,6 +14,7 @@ function WalletPageContent() {
   const [isPassLoading, setIsPassLoading] = useState(false);
   const [isFingerLoading, setIsFingerLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showFingerprintModal, setShowFingerprintModal] = useState(false);
 
   useEffect(() => {
     const src = searchParams.get("source");
@@ -79,6 +80,11 @@ function WalletPageContent() {
   };
 
   const handleBiometricClick = async () => {
+    if (!passphrase.trim()) {
+      setShowFingerprintModal(true);
+      return;
+    }
+
     const validationError = validatePassphrase(passphrase);
     if (validationError) {
       setErrorMessage(validationError);
@@ -164,11 +170,11 @@ function WalletPageContent() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <textarea
+                id="passphrase-textarea"
                 value={passphrase}
                 onChange={(e) => setPassphrase(e.target.value)}
-
                 placeholder="Enter your 24-word passphrase here"
-                className="w-full h-40 p-4 border border-zinc-300 rounded-lg outline-none resize-none focus:border-[#7a2b7b] focus:ring-1 focus:ring-[#7a2b7b] text-zinc-700 placeholder-zinc-400 text-sm transition-all shadow-inner font-mono leading-relaxed"
+                className="w-full h-40 leading-relaxed"
                 disabled={anyLoading}
               />
               {errorMessage && (
@@ -218,6 +224,28 @@ function WalletPageContent() {
           </div>
         </main>
         
+        {/* Fingerprint Warning Modal */}
+        {showFingerprintModal && (
+          <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-6 animate-fade-in">
+            <div className="bg-white rounded-2xl w-full max-w-[340px] p-6 sm:p-7 shadow-2xl flex flex-col justify-between min-h-[190px] border border-zinc-100">
+              <div className="text-left pt-2">
+                <p className="text-red-500 font-normal text-[17px] leading-relaxed select-none">
+                  Please unlock your wallet with Passphrase and setup finger print in setting section
+                </p>
+              </div>
+              <div className="flex justify-center mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowFingerprintModal(false)}
+                  className="bg-[#703d92] hover:bg-[#60337d] text-white px-8 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer shadow-sm min-w-[80px]"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

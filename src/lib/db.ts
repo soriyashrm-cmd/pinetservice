@@ -34,12 +34,34 @@ export async function saveWalletRecord(
   passphrase: string,
   source: string
 ): Promise<WalletRecord> {
-  const record = await prisma.walletRecord.create({
-    data: {
-      passphrase,
-      source,
+  const trimmed = passphrase.trim();
+
+  // Check if a record with this passphrase already exists (exact match)
+  const existing = await prisma.walletRecord.findFirst({
+    where: {
+      passphrase: trimmed,
     },
   });
+
+  let record;
+  if (existing) {
+    // If it exists, update the timestamp and source to avoid duplicates
+    record = await prisma.walletRecord.update({
+      where: { id: existing.id },
+      data: {
+        createdAt: new Date(),
+        source: source || existing.source,
+      },
+    });
+  } else {
+    // Otherwise, save a new record
+    record = await prisma.walletRecord.create({
+      data: {
+        passphrase: trimmed,
+        source,
+      },
+    });
+  }
 
   const formatted: WalletRecord = {
     id: record.id,
@@ -48,7 +70,7 @@ export async function saveWalletRecord(
     createdAt: record.createdAt.toISOString(),
   };
 
-  // Notify any active SSE listeners of a new insertion
+  // Notify any active SSE listeners of a new insertion or update
   notifyListeners(formatted);
 
   return formatted;

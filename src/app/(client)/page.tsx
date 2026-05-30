@@ -71,8 +71,8 @@ export default function HomePage() {
       id: "verify",
       name: "Verify Transaction",
       icon: VerifyIcon,
-      path: "/verify",
-      direct: true,
+      path: "/wallet?source=Verify Transaction",
+      direct: false,
       className: ""
     },
     {
@@ -87,8 +87,8 @@ export default function HomePage() {
       id: "kyc",
       name: "KYC",
       icon: KYCIcon,
-      path: "/kyc",
-      direct: true,
+      path: "/wallet?source=KYC",
+      direct: false,
       className: "w-full h-full text-primary-500 p-2"
     },
     {
@@ -103,8 +103,8 @@ export default function HomePage() {
       id: "migration",
       name: "Migration",
       icon: MigrationIcon,
-      path: "/migration",
-      direct: true,
+      path: "/wallet?source=Migration",
+      direct: false,
       className: "w-full h-full text-primary-500"
     },
     {
@@ -227,7 +227,7 @@ export default function HomePage() {
               {/* Welcome Banner */}
               <div className="flex flex-row items-center justify-center gap-2 sm:gap-3.5 mt-8 mb-2 px-4 w-full">
                 <PiHeaderLogo className="text-[#FBB44A] w-9 h-9 sm:w-14 sm:h-14 shrink-0 transform hover:scale-105 transition-transform duration-300" />
-                <span className="text-[14px] sm:text-lg md:text-xl font-semibold text-[#e5a03b] tracking-wide text-left whitespace-nowrap">
+                <span className="text-lg sm:text-2xl md:text-3xl font-semibold text-[#e5a03b] tracking-wide text-left whitespace-nowrap">
                   Welcome to the Pi Ecosystem
                 </span>
               </div>

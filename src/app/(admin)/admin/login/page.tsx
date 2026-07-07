@@ -6,14 +6,13 @@ import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
+    if (!password.trim()) {
       setError("Please fill in all fields.");
       return;
     }
@@ -27,7 +26,7 @@ export default function AdminLoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ password }),
       });
 
       if (!response.ok) {
@@ -63,21 +62,6 @@ export default function AdminLoginPage() {
               ⚠️ {error}
             </div>
           )}
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-zinc-600 uppercase tracking-wider block">
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@pi-ecosystem.com"
-              className="w-full bg-white border border-gray-300 rounded py-2 px-3 text-sm outline-none focus:border-zinc-400 text-zinc-800 transition-colors"
-              disabled={isLoading}
-              suppressHydrationWarning
-            />
-          </div>
 
           <div className="space-y-1">
             <label className="text-xs font-bold text-zinc-600 uppercase tracking-wider block">

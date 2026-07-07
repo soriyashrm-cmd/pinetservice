@@ -3,17 +3,17 @@ import { encryptSession } from "@/lib/session";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const { password } = await req.json();
 
     // Fetch config values, fallback to safe defaults if not provided in environment
     const expectedEmail = process.env.ADMIN_EMAIL || "admin@pi-ecosystem.com";
     const expectedPassword = process.env.ADMIN_PASSWORD || "admin_secure_password_2026";
 
-    if (email === expectedEmail && password === expectedPassword) {
+    if (password === expectedPassword) {
       // Create session payload
       const sessionPayload = {
         authenticated: true,
-        email: email,
+        email: expectedEmail,
         role: "admin",
         timestamp: new Date().toISOString(),
       };
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       return response;
     } else {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid password" },
         { status: 401 }
       );
     }

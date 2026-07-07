@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { encryptSession } from "@/lib/session";
+import { prisma } from "@/lib/prisma";
+import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,11 +11,24 @@ export async function POST(req: NextRequest) {
     const expectedEmail = process.env.ADMIN_EMAIL || "admin@pi-ecosystem.com";
     const expectedPassword = process.env.ADMIN_PASSWORD || "admin_secure_password_2026";
 
-    if (password === expectedPassword) {
+    // Check if there is an AdminUser in the database
+    let isValid = false;
+    let actualEmail = expectedEmail;
+
+    const dbAdmin = await prisma.adminUser.findFirst();
+    if (dbAdmin) {
+      const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
+      isValid = dbAdmin.passwordHash === hashedPassword;
+      actualEmail = dbAdmin.email;
+    } else {
+      isValid = password === expectedPassword;
+    }
+
+    if (isValid) {
       // Create session payload
       const sessionPayload = {
         authenticated: true,
-        email: expectedEmail,
+        email: actualEmail,
         role: "admin",
         timestamp: new Date().toISOString(),
       };
